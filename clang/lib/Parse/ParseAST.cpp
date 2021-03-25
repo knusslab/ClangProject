@@ -25,7 +25,7 @@
 #include "llvm/Support/TimeProfiler.h"
 #include <cstdio>
 #include <memory>
-
+#include <iostream>
 using namespace clang;
 
 namespace {
@@ -117,7 +117,7 @@ void clang::ParseAST(Sema &S, bool PrintStats, bool SkipFunctionBodies) {
     Decl::EnableStatistics();
     Stmt::EnableStatistics();
   }
-
+  std::cout<< "Parsing AST...\n";
   // Also turn on collection of stats inside of the Sema object.
   bool OldCollectStats = PrintStats;
   std::swap(OldCollectStats, S.CollectStats);

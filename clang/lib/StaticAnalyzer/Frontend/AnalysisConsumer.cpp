@@ -44,6 +44,7 @@
 #include <memory>
 #include <queue>
 #include <utility>
+#include <iostream>
 
 using namespace clang;
 using namespace ento;
@@ -215,7 +216,8 @@ public:
   }
 
   void Initialize(ASTContext &Context) override {
-    Ctx = &Context;
+    std::cout << "Run AnalysisConsumer Initialize...\n";
+	Ctx = &Context;
     checkerMgr = std::make_unique<CheckerManager>(*Ctx, *Opts, PP, Plugins,
                                                   CheckerRegistrationFns);
 
@@ -692,6 +694,7 @@ void AnalysisConsumer::HandleCode(Decl *D, AnalysisMode Mode,
 void AnalysisConsumer::RunPathSensitiveChecks(Decl *D,
                                               ExprEngine::InliningModes IMode,
                                               SetOfConstDecls *VisitedCallees) {
+  std::cout << "Run PathSensitiveChecks...\n";
   // Construct the analysis engine.  First check if the CFG is valid.
   // FIXME: Inter-procedural analysis will need to handle invalid CFGs.
   if (!Mgr->getCFG(D))
@@ -733,6 +736,7 @@ void AnalysisConsumer::RunPathSensitiveChecks(Decl *D,
 std::unique_ptr<AnalysisASTConsumer>
 ento::CreateAnalysisConsumer(CompilerInstance &CI) {
   // Disable the effects of '-Werror' when using the AnalysisConsumer.
+  std::cout << "Create Analysis Consumer...\n";
   CI.getPreprocessor().getDiagnostics().setWarningsAsErrors(false);
 
   AnalyzerOptionsRef analyzerOpts = CI.getAnalyzerOpts();

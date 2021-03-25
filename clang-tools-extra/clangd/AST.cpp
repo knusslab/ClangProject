@@ -34,7 +34,7 @@
 #include "llvm/Support/raw_ostream.h"
 #include <string>
 #include <vector>
-
+#include <iostream>
 namespace clang {
 namespace clangd {
 

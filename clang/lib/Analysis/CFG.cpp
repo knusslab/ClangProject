@@ -60,6 +60,7 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include <iostream>
 
 using namespace clang;
 
@@ -1479,7 +1480,7 @@ std::unique_ptr<CFG> CFGBuilder::buildCFG(const Decl *D, Stmt *Statement) {
   assert(cfg.get());
   if (!Statement)
     return nullptr;
-
+  std::cout<< "Build CFG ... \n";
   // Create an empty block that will serve as the exit block for the CFG.  Since
   // this is the first block added to the CFG, it will be implicitly registered
   // as the exit block.
