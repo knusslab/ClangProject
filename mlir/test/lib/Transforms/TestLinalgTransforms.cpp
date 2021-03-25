@@ -84,9 +84,9 @@ struct TestLinalgTransforms
   Option<bool> testTileAndPadPattern{
       *this, "test-tile-and-pad-pattern",
       llvm::cl::desc("Test tile and pad pattern"), llvm::cl::init(false)};
-  Option<bool> testHoistPadding2Levels{*this, "test-hoist-padding-2-level",
-                                       llvm::cl::desc("Test hoist padding"),
-                                       llvm::cl::init(false)};
+  Option<int> testHoistPadding{*this, "test-hoist-padding",
+                               llvm::cl::desc("Test hoist padding"),
+                               llvm::cl::init(0)};
 };
 } // end anonymous namespace
 
@@ -183,8 +183,8 @@ static void applyPatterns(FuncOp funcOp) {
   // Linalg to vector contraction patterns.
   //===--------------------------------------------------------------------===//
   patterns.add<LinalgVectorizationPattern>(
-      LinalgTransformationFilter(Identifier::get("VECTORIZE", ctx))
-          .addOpFilter<MatmulOp, FillOp, CopyOp, GenericOp>());
+      ctx, LinalgTransformationFilter(Identifier::get("VECTORIZE", ctx))
+               .addOpFilter<MatmulOp, FillOp, CopyOp, GenericOp>());
 
   //===--------------------------------------------------------------------===//
   // Linalg generic permutation patterns.
@@ -258,8 +258,8 @@ static void fillL1TilingAndMatmulToVectorPatterns(
                MatmulOp::getOperationName(), ctx, LinalgVectorizationOptions(),
                LinalgTransformationFilter(Identifier::get("VEC", ctx))));
   patternsVector.back().add<LinalgVectorizationPattern>(
-      LinalgTransformationFilter().addFilter(
-          [](Operation *op) { return success(isa<FillOp, CopyOp>(op)); }));
+      ctx, LinalgTransformationFilter().addFilter(
+               [](Operation *op) { return success(isa<FillOp, CopyOp>(op)); }));
 }
 
 //===----------------------------------------------------------------------===//
@@ -496,6 +496,7 @@ static void applyVectorTransferForwardingPatterns(FuncOp funcOp) {
 static void applyLinalgToVectorPatterns(FuncOp funcOp) {
   RewritePatternSet patterns(funcOp.getContext());
   patterns.add<LinalgVectorizationPattern>(
+      funcOp.getContext(),
       LinalgTransformationFilter()
           .addOpFilter<ContractionOpInterface, FillOp, CopyOp, GenericOp>());
   patterns.add<PadTensorOpVectorizationPattern>(funcOp.getContext());
@@ -570,9 +571,9 @@ void TestLinalgTransforms::runOnFunction() {
     return applyAffineMinSCFCanonicalizationPatterns(getFunction());
   if (testTileAndPadPattern)
     return applyTileAndPadPattern(getFunction());
-  if (testHoistPadding2Levels) {
-    getFunction().walk([](linalg::PadTensorOp padTensorOp) {
-      (void)linalg::hoistPaddingOnTensors(padTensorOp, 2);
+  if (testHoistPadding) {
+    getFunction().walk([&](linalg::PadTensorOp padTensorOp) {
+      (void)linalg::hoistPaddingOnTensors(padTensorOp, testHoistPadding);
     });
   }
 }
