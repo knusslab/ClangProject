@@ -1,4 +1,4 @@
-Docker로 설치할 시 https://github.com/knusslab/Clang-Docker 프로젝트로 가서 
+Docker로 설치할 시 https://github.com/knusslab/Clang-Docker 프로젝트로 가서 참고할 
 
 # The LLVM Compiler Infrastructure
 
