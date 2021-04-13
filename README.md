@@ -1,3 +1,5 @@
+Docker로 설치할 시 https://github.com/knusslab/Clang-Docker 프로젝트로 가서 
+
 # The LLVM Compiler Infrastructure
 
 This directory and its sub-directories contain source code for LLVM,
